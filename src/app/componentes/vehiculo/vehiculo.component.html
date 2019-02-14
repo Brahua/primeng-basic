@@ -1,0 +1,178 @@
+<p-confirmDialog [style]="{width: '50vw'}" acceptLabel="Si" rejectLabel="No"></p-confirmDialog>
+
+<div class="contain animated fast fadeIn">
+  <div class="row">
+    <div class="col-md-8">
+      <p class="float-left text-uppercase"><i class="fas fa-address-card" style="font-size: 24px;"></i> &nbsp;<strong>Bienvenido {{usuario.nombre}} </strong></p>
+    </div>
+    <div class="col-md-4">
+      <div class="float-right">
+        <button pButton type="button" label="Cerrar sesión" class="ui-button-raised ui-button-danger" icon="pi pi-sign-out" (click)="salir()"></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3" *ngIf="mostrarPrivilegios">
+    <div class="col-md-12">
+        <p-panel header="Registrar datos">
+            <p><strong>Datos del vehiculo</strong></p>
+            <hr>
+              <div class="ui-g ui-fluid" style="display: flex; justify-content: center;">
+                <div class="ui-g-12 ui-md-8">
+
+                  <p>Tipo de Vehiculo: {{tipoVehiculoSeleccionado.nombre ? tipoVehiculoSeleccionado.nombre : 'Ninguno'}}</p>
+                  <!-- <p>{{tipoVehiculoSeleccionado.nombre}}</p> -->
+                  <p-listbox [options]="tipoVehiculos" [(ngModel)]="tipoVehiculoSeleccionado" optionLabel="nombre"></p-listbox>
+
+                </div>
+
+                <div class="ui-g-12 ui-md-8">
+                  <div class="ui-inputgroup">
+                    <span class="ui-inputgroup-addon"><i class="fa fa-car"></i></span>
+                    <input type="text" [(ngModel)]="temporalVehiculo.marca" pInputText placeholder="Marca" />
+                  </div>
+                </div>
+
+                <div class="ui-g-12 ui-md-8">
+                  <div class="ui-inputgroup">
+                    <span class="ui-inputgroup-addon"><i class="fa fa-car"></i></span>
+                    <input type="text" [(ngModel)]="temporalVehiculo.color" pInputText placeholder="Color" />
+                  </div>
+                </div>
+
+                <div class="ui-g-12 ui-md-8">
+                  <div class="ui-inputgroup">
+                    <span class="ui-inputgroup-addon"><i class="fa fa-car"></i></span>
+                    <input type="text" [(ngModel)]="temporalVehiculo.placa" pInputText placeholder="Placa" />
+                  </div>
+                </div>
+
+                <div class="ui-g-12 ui-md-8" *ngIf="tipoVehiculoSeleccionado.id === 1">
+                  <div class="ui-inputgroup">
+                    <span class="ui-inputgroup-addon"><i class="fa fa-car"></i></span>
+                    <input type="text" [(ngModel)]="temporalVehiculo.km" pInputText placeholder="Kilometros" />
+                  </div>
+                </div>
+
+                <div class="ui-g-12 ui-md-8" *ngIf="tipoVehiculoSeleccionado.id === 1">
+                  <div class="ui-inputgroup">
+                    <span class="ui-inputgroup-addon"><i class="fa fa-car"></i></span>
+                    <input type="text" [(ngModel)]="temporalVehiculo.tiempoUso" pInputText placeholder="Tiempo de Uso" />
+                  </div>
+                </div>
+                
+                <div class="ui-g-12 ui-md-8" *ngIf="tipoVehiculoSeleccionado.id === 1">
+                  <div class="ui-inputgroup">
+                    <span class="ui-inputgroup-addon"><i class="fa fa-car"></i></span>
+                    <input type="text" [(ngModel)]="temporalVehiculo.motor" pInputText placeholder="Motor" />
+                  </div>
+                </div>
+
+              </div>
+            <br>
+            <p><strong>Datos del propietario</strong></p>
+            <hr>
+            <div class="ui-g ui-fluid" style="display: flex; justify-content: center;">
+                <div class="ui-g-12 ui-md-8">
+                  <div class="ui-inputgroup">
+                    <span class="ui-inputgroup-addon"><i class="fa fa-user"></i></span>
+                    <input type="text" [(ngModel)]="temporalPropietario.nombre" pInputText placeholder="Nombre" />
+                  </div>
+                </div>
+                <div class="ui-g-12 ui-md-8">
+                  <div class="ui-inputgroup">
+                    <span class="ui-inputgroup-addon"><i class="fa fa-user"></i></span>
+                    <input type="number" [(ngModel)]="temporalPropietario.dni" pInputText placeholder="DNI"/>
+                  </div>
+                </div>
+                <div class="ui-g-12 ui-md-8">
+                  <div class="ui-inputgroup">
+                    <span class="ui-inputgroup-addon"><i class="fa fa-user"></i></span>
+                    <input type="text" [(ngModel)]="temporalPropietario.licencia" pInputText placeholder="Licencia" />
+                  </div>
+                </div>
+              </div>
+        
+            <p-footer style="text-align: left;">
+              <button pButton type="button" label="{{editar ? 'Editar' : 'Guardar'}}" class="ui-button-rounded" icon="pi pi-check" style="margin-right: 5px;"
+                (click)="clickGuardar()"></button>
+              
+              <button pButton type="button" label="Limpiar" class="ui-button-rounded ui-button-secondary" icon="pi pi-spinner" (click)="limpiar()"></button>
+            </p-footer>
+        
+            
+          </p-panel>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-md-12">
+      <p-panel header="Lista de Vehiculos">
+        <p-messages [(value)]="msgs" [showTransitionOptions]="'400ms'" [hideTransitionOptions]="'300ms'"></p-messages>
+        <p-dataTable [value]="listaVehiculos" [immutable]="false" expandableRows="true">
+          <p-column expander="true" styleClass="col-icon" header="Dueño"></p-column>
+          <p-column field="tipo" header="Tipo"></p-column>
+          <p-column field="marca" header="Marca"></p-column>
+          <p-column field="color" header="Color"></p-column>
+          <p-column field="placa" header="Placa"></p-column>
+          <p-column field="" header="Accion" *ngIf="mostrarPrivilegios">
+            <ng-template pTemplate="body" let-vehiculo="rowData" let-index="rowIndex">
+              <div style="display: flex; justify-content: center;">
+                  <button pButton type="button" class="ui-button-warning" style="margin: 0px 3px;" icon="pi pi-pencil" (click)="onClickEditar(vehiculo, index)"></button>
+                  <button pButton type="button" class="ui-button-danger" icon="pi pi-trash" style="margin: 0px 3px;" (click)="onClickEliminar(index)"></button>
+              </div>
+            </ng-template>
+          </p-column>
+          <ng-template let-vehiculo pTemplate="rowexpansion">
+            <div class="ui-grid ui-grid-responsive ui-fluid">
+              <div class="ui-grid-row">
+                <div class="ui-grid-col-12">
+                  <div class="ui-grid ui-grid-responsive ui-grid-pad">
+                    <div class="ui-grid-row">
+                      <div class="ui-grid-col-2 label"><strong>Nombre:</strong></div>
+                      <div class="ui-grid-col-10">{{vehiculo.propietario.nombre}}</div>
+                    </div>
+                    <div class="ui-grid-row">
+                      <div class="ui-grid-col-2 label"><strong>DNI:</strong></div>
+                      <div class="ui-grid-col-10">{{vehiculo.propietario.dni}}</div>
+                    </div>
+                    <div class="ui-grid-row">
+                      <div class="ui-grid-col-2 label"><strong>Licencia:</strong></div>
+                      <div class="ui-grid-col-10">{{vehiculo.propietario.licencia}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ui-grid-row" *ngIf="vehiculo.tipo === 'MOTO'">
+                <div class="ui-grid-col-12">
+                  <div class="ui-grid ui-grid-responsive ui-grid-pad">
+                    <hr>
+                    <div class="ui-grid-row">
+                      <div class="ui-grid-col-12 label">DATOS ADICIONALES DE LA {{vehiculo.tipo}}:</div>
+                    </div>
+                    <div class="ui-grid-row">
+                      <div class="ui-grid-col-2 label"><strong>Kilometros:</strong></div>
+                      <div class="ui-grid-col-10">{{vehiculo.km}}</div>
+                    </div>
+                    <div class="ui-grid-row">
+                      <div class="ui-grid-col-2 label"><strong>Tiempo de uso:</strong></div>
+                      <div class="ui-grid-col-10">{{vehiculo.tiempoUso}}</div>
+                    </div>
+                    <div class="ui-grid-row">
+                      <div class="ui-grid-col-2 label"><strong>Motor:</strong></div>
+                      <div class="ui-grid-col-10">{{vehiculo.motor}}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </ng-template>
+        </p-dataTable>
+          
+      </p-panel>
+    </div>
+  </div>
+
+</div>
